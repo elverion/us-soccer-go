@@ -17,6 +17,15 @@ import (
 	"github.com/lrstanley/chix"
 )
 
+const teamIndex = 0
+const fdcoukIndex = 1
+const cityIndex = 2
+const stadiumIndex = 3
+const capacityIndex = 4
+const latIndex = 5
+const longIndex = 6
+const countryIndex = 7
+
 func validateFunc(index int, records [][]string) (int, bool) {
 	if index > len(records)-1 || index == -1 {
 		// -1 is failure
@@ -36,7 +45,7 @@ func validateFunc(index int, records [][]string) (int, bool) {
 		return err == nil
 	}
 
-	if !isFloat(line[5]) || !isFloat(line[6]) {
+	if !isFloat(line[latIndex]) || !isFloat(line[longIndex]) {
 		return -1, false
 	}
 
@@ -47,7 +56,7 @@ func validateFunc(index int, records [][]string) (int, bool) {
 	}
 
 	// The rest of the columns must not be empty
-	if isEmpty(line[0]) || isEmpty(line[1]) || isEmpty(line[2]) || isEmpty(line[3]) || isEmpty(line[4]) || isEmpty(line[7]) {
+	if isEmpty(line[teamIndex]) || isEmpty(line[fdcoukIndex]) || isEmpty(line[cityIndex]) || isEmpty(line[stadiumIndex]) || isEmpty(line[capacityIndex]) || isEmpty(line[countryIndex]) {
 		return -1, false
 	}
 
