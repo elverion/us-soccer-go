@@ -1,32 +1,31 @@
 package main
 
 import (
-	"context"
+	"us-soccer-go-test/internal/ent"
 	"us-soccer-go-test/internal/models"
 
 	"github.com/apex/log"
 	"github.com/lrstanley/chix"
 	"github.com/lrstanley/clix"
+
+	_ "us-soccer-go-test/internal/ent/runtime"
 )
 
 var (
 	cli = &clix.CLI[models.Flags]{}
 
 	logger log.Interface
+
+	db *ent.Client
 )
 
-func init() {
-	cli.Parse()
-	logger = cli.Logger
-}
-
 func main() {
-	ctx := context.Background()
+	ctx, cancel := setup()
 
 	if err := chix.RunContext(
 		ctx, httpServer(),
 	); err != nil {
-
+		cancel()
 		log.WithError(err).Fatal("shutting down")
 	}
 }

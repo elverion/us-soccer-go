@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"us-soccer-go-test/internal/handlers/stadiumhandler"
+
+	"us-soccer-go-test/internal/stadium"
+	"us-soccer-go-test/internal/weather"
 
 	"github.com/go-chi/chi/v5"
 
@@ -46,7 +48,8 @@ func httpServer() *http.Server {
 	}
 
 	/** Routes **/
-	r.Route("/api/stadium", stadiumhandler.NewHandler(logger).Route)
+	r.Route("/api/stadium", stadium.NewController(logger, db).Route)
+	r.Route("/api/weather", weather.NewController(logger, db).Route)
 	// r.NotFound(chix.UseStatic(ctx, &chix.Static{
 	// 	FS:         staticFS,
 	// 	CatchAll:   true,
