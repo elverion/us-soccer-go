@@ -72,6 +72,20 @@ func (wu *WeatherUpdate) SetNillableDescription(s *string) *WeatherUpdate {
 	return wu
 }
 
+// SetIcon sets the "icon" field.
+func (wu *WeatherUpdate) SetIcon(s string) *WeatherUpdate {
+	wu.mutation.SetIcon(s)
+	return wu
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (wu *WeatherUpdate) SetNillableIcon(s *string) *WeatherUpdate {
+	if s != nil {
+		wu.SetIcon(*s)
+	}
+	return wu
+}
+
 // SetStadiumID sets the "stadium" edge to the Stadium entity by ID.
 func (wu *WeatherUpdate) SetStadiumID(id uuid.UUID) *WeatherUpdate {
 	wu.mutation.SetStadiumID(id)
@@ -184,6 +198,9 @@ func (wu *WeatherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := wu.mutation.Description(); ok {
 		_spec.SetField(weather.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := wu.mutation.Icon(); ok {
+		_spec.SetField(weather.FieldIcon, field.TypeString, value)
+	}
 	if wu.mutation.StadiumCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -272,6 +289,20 @@ func (wuo *WeatherUpdateOne) SetDescription(s string) *WeatherUpdateOne {
 func (wuo *WeatherUpdateOne) SetNillableDescription(s *string) *WeatherUpdateOne {
 	if s != nil {
 		wuo.SetDescription(*s)
+	}
+	return wuo
+}
+
+// SetIcon sets the "icon" field.
+func (wuo *WeatherUpdateOne) SetIcon(s string) *WeatherUpdateOne {
+	wuo.mutation.SetIcon(s)
+	return wuo
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (wuo *WeatherUpdateOne) SetNillableIcon(s *string) *WeatherUpdateOne {
+	if s != nil {
+		wuo.SetIcon(*s)
 	}
 	return wuo
 }
@@ -417,6 +448,9 @@ func (wuo *WeatherUpdateOne) sqlSave(ctx context.Context) (_node *Weather, err e
 	}
 	if value, ok := wuo.mutation.Description(); ok {
 		_spec.SetField(weather.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.Icon(); ok {
+		_spec.SetField(weather.FieldIcon, field.TypeString, value)
 	}
 	if wuo.mutation.StadiumCleared() {
 		edge := &sqlgraph.EdgeSpec{

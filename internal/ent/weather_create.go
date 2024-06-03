@@ -65,6 +65,20 @@ func (wc *WeatherCreate) SetDescription(s string) *WeatherCreate {
 	return wc
 }
 
+// SetIcon sets the "icon" field.
+func (wc *WeatherCreate) SetIcon(s string) *WeatherCreate {
+	wc.mutation.SetIcon(s)
+	return wc
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (wc *WeatherCreate) SetNillableIcon(s *string) *WeatherCreate {
+	if s != nil {
+		wc.SetIcon(*s)
+	}
+	return wc
+}
+
 // SetID sets the "id" field.
 func (wc *WeatherCreate) SetID(u uuid.UUID) *WeatherCreate {
 	wc.mutation.SetID(u)
@@ -149,6 +163,10 @@ func (wc *WeatherCreate) defaults() error {
 		v := weather.DefaultUpdateTime()
 		wc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := wc.mutation.Icon(); !ok {
+		v := weather.DefaultIcon
+		wc.mutation.SetIcon(v)
+	}
 	if _, ok := wc.mutation.ID(); !ok {
 		if weather.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized weather.DefaultID (forgotten import ent/runtime?)")
@@ -177,6 +195,9 @@ func (wc *WeatherCreate) check() error {
 		if err := weather.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Weather.description": %w`, err)}
 		}
+	}
+	if _, ok := wc.mutation.Icon(); !ok {
+		return &ValidationError{Name: "icon", err: errors.New(`ent: missing required field "Weather.icon"`)}
 	}
 	return nil
 }
@@ -229,6 +250,10 @@ func (wc *WeatherCreate) createSpec() (*Weather, *sqlgraph.CreateSpec) {
 	if value, ok := wc.mutation.Description(); ok {
 		_spec.SetField(weather.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := wc.mutation.Icon(); ok {
+		_spec.SetField(weather.FieldIcon, field.TypeString, value)
+		_node.Icon = value
 	}
 	if nodes := wc.mutation.StadiumIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -341,6 +366,18 @@ func (u *WeatherUpsert) UpdateDescription() *WeatherUpsert {
 	return u
 }
 
+// SetIcon sets the "icon" field.
+func (u *WeatherUpsert) SetIcon(v string) *WeatherUpsert {
+	u.Set(weather.FieldIcon, v)
+	return u
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *WeatherUpsert) UpdateIcon() *WeatherUpsert {
+	u.SetExcluded(weather.FieldIcon)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -438,6 +475,20 @@ func (u *WeatherUpsertOne) SetDescription(v string) *WeatherUpsertOne {
 func (u *WeatherUpsertOne) UpdateDescription() *WeatherUpsertOne {
 	return u.Update(func(s *WeatherUpsert) {
 		s.UpdateDescription()
+	})
+}
+
+// SetIcon sets the "icon" field.
+func (u *WeatherUpsertOne) SetIcon(v string) *WeatherUpsertOne {
+	return u.Update(func(s *WeatherUpsert) {
+		s.SetIcon(v)
+	})
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *WeatherUpsertOne) UpdateIcon() *WeatherUpsertOne {
+	return u.Update(func(s *WeatherUpsert) {
+		s.UpdateIcon()
 	})
 }
 
@@ -705,6 +756,20 @@ func (u *WeatherUpsertBulk) SetDescription(v string) *WeatherUpsertBulk {
 func (u *WeatherUpsertBulk) UpdateDescription() *WeatherUpsertBulk {
 	return u.Update(func(s *WeatherUpsert) {
 		s.UpdateDescription()
+	})
+}
+
+// SetIcon sets the "icon" field.
+func (u *WeatherUpsertBulk) SetIcon(v string) *WeatherUpsertBulk {
+	return u.Update(func(s *WeatherUpsert) {
+		s.SetIcon(v)
+	})
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *WeatherUpsertBulk) UpdateIcon() *WeatherUpsertBulk {
+	return u.Update(func(s *WeatherUpsert) {
+		s.UpdateIcon()
 	})
 }
 

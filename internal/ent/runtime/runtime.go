@@ -82,6 +82,10 @@ func init() {
 	weatherDescDescription := weatherFields[2].Descriptor()
 	// weather.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	weather.DescriptionValidator = weatherDescDescription.Validators[0].(func(string) error)
+	// weatherDescIcon is the schema descriptor for icon field.
+	weatherDescIcon := weatherFields[3].Descriptor()
+	// weather.DefaultIcon holds the default value on creation for the icon field.
+	weather.DefaultIcon = weatherDescIcon.Default.(string)
 	// weatherDescID is the schema descriptor for id field.
 	weatherDescID := weatherFields[0].Descriptor()
 	// weather.DefaultID holds the default value on creation for the id field.

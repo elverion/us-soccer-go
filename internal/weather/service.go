@@ -25,13 +25,13 @@ func (c *Controller) getWeatherByStadium(stadiumID string, includeID bool, ctx c
 		return nil, err
 	}
 
-	weather, _ := FetchWeather(strconv.FormatFloat(stadium.Latitude, 'f', -1, 64), strconv.FormatFloat(stadium.Longitude, 'f', -1, 64), c.db, stadium.ID, ctx, c.logger)
+	w, _ := FetchWeather(strconv.FormatFloat(stadium.Latitude, 'f', -1, 64), strconv.FormatFloat(stadium.Longitude, 'f', -1, 64), c.db, stadium.ID, ctx, c.logger)
 
 	if includeID {
-		return &Weather{StadiumID: &id, Description: weather.Description, Temp: weather.Temp}, nil
+		return &Weather{StadiumID: &id, Description: w.Description, Icon: w.Icon, Temp: w.Temp}, nil
 	}
 
-	return weather, nil
+	return w, nil
 }
 
 func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx context.Context, logger log.Interface) (*Weather, bool) {
@@ -53,6 +53,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 			return &Weather{
 				Temp:        result.Temperature,
 				Description: result.Description,
+				Icon:        result.Icon,
 			}, false
 		}
 		new = false
@@ -69,6 +70,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		return &Weather{
 			Temp:        result.Temperature,
 			Description: result.Description,
+			Icon:        result.Icon,
 		}, false
 	}
 
@@ -82,6 +84,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		return &Weather{
 			Temp:        result.Temperature,
 			Description: result.Description,
+			Icon:        result.Icon,
 		}, false
 	}
 
@@ -96,9 +99,9 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 	var newResult *ent.Weather
 
 	if new {
-		newResult, err = db.Weather.Create().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).SetStadiumID(stadiumId).Save(ctx)
+		newResult, err = db.Weather.Create().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).SetIcon(owr.Weather[0].Icon).SetStadiumID(stadiumId).Save(ctx)
 	} else {
-		newResult, err = result.Update().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).Save(ctx)
+		newResult, err = result.Update().SetDescription(owr.Weather[0].Description).SetIcon(owr.Weather[0].Icon).SetTemperature(owr.Main.Temp).Save(ctx)
 	}
 
 	if err != nil {
@@ -110,12 +113,14 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		return &Weather{
 			Temp:        result.Temperature,
 			Description: result.Description,
+			Icon:        result.Icon,
 		}, true
 	}
 
 	return &Weather{
 		Temp:        newResult.Temperature,
 		Description: newResult.Description,
+		Icon:        newResult.Icon,
 	}, true
 
 }

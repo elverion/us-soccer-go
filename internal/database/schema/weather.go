@@ -18,6 +18,7 @@ func (Weather) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.Float("temperature"),
 		field.String("description").NotEmpty(),
+		field.String("icon").Default("01d"),
 	}
 }
 

@@ -24,6 +24,8 @@ const (
 	FieldTemperature = "temperature"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldIcon holds the string denoting the icon field in the database.
+	FieldIcon = "icon"
 	// EdgeStadium holds the string denoting the stadium edge name in mutations.
 	EdgeStadium = "stadium"
 	// Table holds the table name of the weather in the database.
@@ -44,6 +46,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldTemperature,
 	FieldDescription,
+	FieldIcon,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "weathers"
@@ -83,6 +86,8 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// DefaultIcon holds the default value on creation for the "icon" field.
+	DefaultIcon string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -113,6 +118,11 @@ func ByTemperature(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByIcon orders the results by the icon field.
+func ByIcon(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIcon, opts...).ToFunc()
 }
 
 // ByStadiumField orders the results by stadium field.

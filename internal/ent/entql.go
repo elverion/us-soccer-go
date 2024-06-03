@@ -52,6 +52,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			weather.FieldUpdateTime:  {Type: field.TypeTime, Column: weather.FieldUpdateTime},
 			weather.FieldTemperature: {Type: field.TypeFloat64, Column: weather.FieldTemperature},
 			weather.FieldDescription: {Type: field.TypeString, Column: weather.FieldDescription},
+			weather.FieldIcon:        {Type: field.TypeString, Column: weather.FieldIcon},
 		},
 	}
 	graph.MustAddE(
@@ -239,6 +240,11 @@ func (f *WeatherFilter) WhereTemperature(p entql.Float64P) {
 // WhereDescription applies the entql string predicate on the description field.
 func (f *WeatherFilter) WhereDescription(p entql.StringP) {
 	f.Where(p.Field(weather.FieldDescription))
+}
+
+// WhereIcon applies the entql string predicate on the icon field.
+func (f *WeatherFilter) WhereIcon(p entql.StringP) {
+	f.Where(p.Field(weather.FieldIcon))
 }
 
 // WhereHasStadium applies a predicate to check if query has an edge stadium.

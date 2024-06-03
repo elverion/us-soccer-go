@@ -920,6 +920,7 @@ type WeatherMutation struct {
 	temperature    *float64
 	addtemperature *float64
 	description    *string
+	icon           *string
 	clearedFields  map[string]struct{}
 	stadium        *uuid.UUID
 	clearedstadium bool
@@ -1196,6 +1197,42 @@ func (m *WeatherMutation) ResetDescription() {
 	m.description = nil
 }
 
+// SetIcon sets the "icon" field.
+func (m *WeatherMutation) SetIcon(s string) {
+	m.icon = &s
+}
+
+// Icon returns the value of the "icon" field in the mutation.
+func (m *WeatherMutation) Icon() (r string, exists bool) {
+	v := m.icon
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIcon returns the old "icon" field's value of the Weather entity.
+// If the Weather object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WeatherMutation) OldIcon(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIcon is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIcon requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIcon: %w", err)
+	}
+	return oldValue.Icon, nil
+}
+
+// ResetIcon resets all changes to the "icon" field.
+func (m *WeatherMutation) ResetIcon() {
+	m.icon = nil
+}
+
 // SetStadiumID sets the "stadium" edge to the Stadium entity by id.
 func (m *WeatherMutation) SetStadiumID(id uuid.UUID) {
 	m.stadium = &id
@@ -1269,7 +1306,7 @@ func (m *WeatherMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WeatherMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, weather.FieldCreateTime)
 	}
@@ -1281,6 +1318,9 @@ func (m *WeatherMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, weather.FieldDescription)
+	}
+	if m.icon != nil {
+		fields = append(fields, weather.FieldIcon)
 	}
 	return fields
 }
@@ -1298,6 +1338,8 @@ func (m *WeatherMutation) Field(name string) (ent.Value, bool) {
 		return m.Temperature()
 	case weather.FieldDescription:
 		return m.Description()
+	case weather.FieldIcon:
+		return m.Icon()
 	}
 	return nil, false
 }
@@ -1315,6 +1357,8 @@ func (m *WeatherMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldTemperature(ctx)
 	case weather.FieldDescription:
 		return m.OldDescription(ctx)
+	case weather.FieldIcon:
+		return m.OldIcon(ctx)
 	}
 	return nil, fmt.Errorf("unknown Weather field %s", name)
 }
@@ -1351,6 +1395,13 @@ func (m *WeatherMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case weather.FieldIcon:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIcon(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Weather field %s", name)
@@ -1427,6 +1478,9 @@ func (m *WeatherMutation) ResetField(name string) error {
 		return nil
 	case weather.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case weather.FieldIcon:
+		m.ResetIcon()
 		return nil
 	}
 	return fmt.Errorf("unknown Weather field %s", name)

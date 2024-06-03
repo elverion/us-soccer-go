@@ -33,6 +33,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "temperature", Type: field.TypeFloat64},
 		{Name: "description", Type: field.TypeString},
+		{Name: "icon", Type: field.TypeString, Default: "01d"},
 		{Name: "stadium_weather", Type: field.TypeUUID, Unique: true, Nullable: true},
 	}
 	// WeathersTable holds the schema information for the "weathers" table.
@@ -43,7 +44,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "weathers_stadia_weather",
-				Columns:    []*schema.Column{WeathersColumns[5]},
+				Columns:    []*schema.Column{WeathersColumns[6]},
 				RefColumns: []*schema.Column{StadiaColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

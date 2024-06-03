@@ -76,6 +76,11 @@ func Description(v string) predicate.Weather {
 	return predicate.Weather(sql.FieldEQ(FieldDescription, v))
 }
 
+// Icon applies equality check predicate on the "icon" field. It's identical to IconEQ.
+func Icon(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldEQ(FieldIcon, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Weather {
 	return predicate.Weather(sql.FieldEQ(FieldCreateTime, v))
@@ -259,6 +264,71 @@ func DescriptionEqualFold(v string) predicate.Weather {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Weather {
 	return predicate.Weather(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// IconEQ applies the EQ predicate on the "icon" field.
+func IconEQ(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldEQ(FieldIcon, v))
+}
+
+// IconNEQ applies the NEQ predicate on the "icon" field.
+func IconNEQ(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldNEQ(FieldIcon, v))
+}
+
+// IconIn applies the In predicate on the "icon" field.
+func IconIn(vs ...string) predicate.Weather {
+	return predicate.Weather(sql.FieldIn(FieldIcon, vs...))
+}
+
+// IconNotIn applies the NotIn predicate on the "icon" field.
+func IconNotIn(vs ...string) predicate.Weather {
+	return predicate.Weather(sql.FieldNotIn(FieldIcon, vs...))
+}
+
+// IconGT applies the GT predicate on the "icon" field.
+func IconGT(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldGT(FieldIcon, v))
+}
+
+// IconGTE applies the GTE predicate on the "icon" field.
+func IconGTE(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldGTE(FieldIcon, v))
+}
+
+// IconLT applies the LT predicate on the "icon" field.
+func IconLT(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldLT(FieldIcon, v))
+}
+
+// IconLTE applies the LTE predicate on the "icon" field.
+func IconLTE(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldLTE(FieldIcon, v))
+}
+
+// IconContains applies the Contains predicate on the "icon" field.
+func IconContains(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldContains(FieldIcon, v))
+}
+
+// IconHasPrefix applies the HasPrefix predicate on the "icon" field.
+func IconHasPrefix(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldHasPrefix(FieldIcon, v))
+}
+
+// IconHasSuffix applies the HasSuffix predicate on the "icon" field.
+func IconHasSuffix(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldHasSuffix(FieldIcon, v))
+}
+
+// IconEqualFold applies the EqualFold predicate on the "icon" field.
+func IconEqualFold(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldEqualFold(FieldIcon, v))
+}
+
+// IconContainsFold applies the ContainsFold predicate on the "icon" field.
+func IconContainsFold(v string) predicate.Weather {
+	return predicate.Weather(sql.FieldContainsFold(FieldIcon, v))
 }
 
 // HasStadium applies the HasEdge predicate on the "stadium" edge.

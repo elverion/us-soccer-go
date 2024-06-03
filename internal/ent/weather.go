@@ -27,6 +27,8 @@ type Weather struct {
 	Temperature float64 `json:"temperature,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// Icon holds the value of the "icon" field.
+	Icon string `json:"icon,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WeatherQuery when eager-loading is set.
 	Edges           WeatherEdges `json:"edges"`
@@ -61,7 +63,7 @@ func (*Weather) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case weather.FieldTemperature:
 			values[i] = new(sql.NullFloat64)
-		case weather.FieldDescription:
+		case weather.FieldDescription, weather.FieldIcon:
 			values[i] = new(sql.NullString)
 		case weather.FieldCreateTime, weather.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -113,6 +115,12 @@ func (w *Weather) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				w.Description = value.String
+			}
+		case weather.FieldIcon:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field icon", values[i])
+			} else if value.Valid {
+				w.Icon = value.String
 			}
 		case weather.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -173,6 +181,9 @@ func (w *Weather) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(w.Description)
+	builder.WriteString(", ")
+	builder.WriteString("icon=")
+	builder.WriteString(w.Icon)
 	builder.WriteByte(')')
 	return builder.String()
 }
