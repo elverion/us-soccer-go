@@ -10,7 +10,7 @@ type Flags struct {
 
 type ConfigHTTP struct {
 	Addr           string   `short:"a" long:"addr" default:":8080" env:"ADDR" description:"ip:port pair to bind to" required:"true"`
-	TrustedProxies []string `long:"trusted-proxies" env:"TRUSTED_PROXIES" descriotion:"set of CIDR ranges that are allowed to provide an X-Forwarded-For header"`
+	TrustedProxies []string `long:"trusted-proxies" env:"TRUSTED_PROXIES" description:"set of CIDR ranges that are allowed to provide an X-Forwarded-For header"`
 }
 
 type APIKeys struct {
