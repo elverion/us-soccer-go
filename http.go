@@ -50,17 +50,6 @@ func httpServer() *http.Server {
 	/** Routes **/
 	r.Route("/api/stadiums", stadium.NewController(logger, db).Route)
 	r.Route("/api/weather", weather.NewController(logger, db).Route)
-	// r.NotFound(chix.UseStatic(ctx, &chix.Static{
-	// 	FS:         staticFS,
-	// 	CatchAll:   true,
-	// 	AllowLocal: cli.Debug,
-	// 	Path:       "public/dist",
-	// 	SPA:        true,
-	// 	Headers: map[string]string{
-	// 		"Vary":          "Accept-Encoding",
-	// 		"Cache-Control": "public, max-age=7776000",
-	// 	},
-	// }).ServeHTTP)
 
 	// Setup our http server.
 	return &http.Server{
