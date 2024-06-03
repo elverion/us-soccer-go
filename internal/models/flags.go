@@ -1,16 +1,15 @@
 package models
 
 type Flags struct {
-	Configured bool       `long:"configured" env:"CONFIGURED" required:"true" description:"If set to false, the web application will exit, should be set to true when everything is configured correctly"`
-	Env        string     `short:"e" long:"env" env:"ENV" required:"true" description:"The environment the program is running in: production/development"`
-	HTTP       ConfigHTTP `group:"HTTP Server Options" namespace:"http" env-namespace:"HTTP"`
-	APIKeys    APIKeys    `group:"API keys" namespace:"api-keys" env-namespace:"API_KEYS"`
-	DB         ConfigDB   `group:"Database Options" namespace:"db" env-namespace:"DB"`
+	Env       string     `short:"e" long:"env" env:"ENV" required:"true" description:"The environment the program is running in: production/development"`
+	HTTP      ConfigHTTP `group:"HTTP Server Options" namespace:"http" env-namespace:"HTTP"`
+	APIKeys   APIKeys    `group:"API keys" namespace:"api-keys" env-namespace:"API_KEYS"`
+	DB        ConfigDB   `group:"Database Options" namespace:"db" env-namespace:"DB"`
+	RunDaemon bool       `short:"d" long:"daemon" env:"RUN_DAEMON" description:"Determines if the weather daemon should be run"`
 }
 
 type ConfigHTTP struct {
 	Addr           string   `short:"a" long:"addr" default:":8080" env:"ADDR" description:"ip:port pair to bind to" required:"true"`
-	BaseURL        string   `long:"base-url" required:"true" env:"BASE_URL"`
 	TrustedProxies []string `long:"trusted-proxies" env:"TRUSTED_PROXIES" descriotion:"set of CIDR ranges that are allowed to provide an X-Forwarded-For header"`
 }
 

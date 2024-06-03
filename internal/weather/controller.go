@@ -19,15 +19,6 @@ func NewController(lg log.Interface, db *ent.Client) *Controller {
 	return &Controller{logger: lg, db: db}
 }
 
-func (c *Controller) getWeatherForAllStadiums(w http.ResponseWriter, r *http.Request) {
-	weather, err := c.getWeatherForStadiums(r.Context())
-	if chix.Error(w, r, err) {
-		return
-	}
-
-	chix.JSON(w, r, 200, chix.M{"weather": weather})
-}
-
 func (c *Controller) getWeatherForStadium(w http.ResponseWriter, r *http.Request) {
 	stadiumID := chi.URLParam(r, "stadium")
 

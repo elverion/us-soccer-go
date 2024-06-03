@@ -17,15 +17,21 @@ var (
 	logger log.Interface
 
 	db *ent.Client
+
+	cancelDaemon func()
 )
 
 func main() {
-	ctx, cancel := setup()
+	ctx := setup()
 
 	if err := chix.RunContext(
 		ctx, httpServer(),
 	); err != nil {
-		cancel()
-		log.WithError(err).Fatal("shutting down")
+
+		if cli.Flags.RunDaemon {
+			cancelDaemon()
+		}
+
+		logger.WithError(err).Fatal("shutting down")
 	}
 }

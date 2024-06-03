@@ -9,13 +9,9 @@ import (
 	"github.com/apex/log"
 )
 
-func setup() (context.Context, func()) {
+func setup() context.Context {
 	cli.Parse()
 	logger = cli.Logger
-
-	if !cli.Flags.Configured {
-		logger.Fatal("Not configured yet, please configure")
-	}
 
 	// Initalize the database
 	db = database.Open(logger, cli.Flags.DB)
@@ -23,7 +19,9 @@ func setup() (context.Context, func()) {
 	ctx := ent.NewContext(log.NewContext(context.Background(), logger), db)
 	database.Migrate(ctx, logger)
 
-	cancel := weather.StartWeatherDaemon(db)
+	if cli.Flags.RunDaemon {
+		cancelDaemon = weather.StartWeatherDaemon(db, logger)
+	}
 
-	return ctx, cancel
+	return ctx
 }

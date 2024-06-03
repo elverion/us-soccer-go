@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 	"us-soccer-go-test/internal/ent"
 	"us-soccer-go-test/internal/ent/stadium"
@@ -19,48 +20,21 @@ const baseURL = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&a
 
 func (c *Controller) getWeatherByStadium(stadiumID string, includeID bool, ctx context.Context) (*Weather, error) {
 	id, _ := uuid.Parse(stadiumID)
-	weather, err := c.db.Weather.Query().Where(weather.HasStadiumWith(stadium.ID(id))).First(ctx)
+	stadium, err := c.db.Stadium.Query().Where(stadium.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	weather, _ := FetchWeather(strconv.FormatFloat(stadium.Latitude, 'f', -1, 64), strconv.FormatFloat(stadium.Longitude, 'f', -1, 64), c.db, stadium.ID, ctx, c.logger)
 
 	if includeID {
-		return &Weather{StadiumID: &id, Description: weather.Description, Temp: weather.Temperature}, nil
+		return &Weather{StadiumID: &id, Description: weather.Description, Temp: weather.Temp}, nil
 	}
-
-	return &Weather{Description: weather.Description, Temp: weather.Temperature}, nil
-}
-
-func (c *Controller) getWeatherForStadiumsFunc(ctx context.Context, index int, records []*ent.Stadium, weather []Weather) (int, []Weather) {
-	if index > len(records)-1 {
-		return -1, weather
-	}
-
-	w, err := c.getWeatherByStadium(string(records[index].ID.String()), true, ctx)
-
-	if err != nil {
-		c.logger.WithError(err).Warn("Could not get weather")
-		return -1, nil
-	}
-
-	newData := append(weather, *w)
-
-	return c.getWeatherForStadiumsFunc(ctx, index+1, records, newData)
-}
-
-func (c *Controller) getWeatherForStadiums(ctx context.Context) ([]Weather, error) {
-	stadiums, err := c.db.Stadium.Query().All(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	_, weather := c.getWeatherForStadiumsFunc(ctx, 0, stadiums, []Weather{})
 
 	return weather, nil
 }
 
-func fetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx context.Context) {
+func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx context.Context, logger log.Interface) (*Weather, bool) {
 	// Check the DB for a weather entry for the stadium
 	result, err := db.Weather.Query().Where(weather.HasStadiumWith(stadium.ID(stadiumId))).First(ctx)
 
@@ -69,14 +43,17 @@ func fetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 	if err != nil {
 		if !ent.IsNotFound(err) {
 			// log an error
-			log.WithError(err).Warn("failed to query db")
-			return
+			logger.WithError(err).Warn("failed to query db")
+			return nil, false
 		}
 		new = true
 	} else {
 		if time.Since(result.UpdateTime).Minutes() < 10 {
 			// don't do anything
-			return
+			return &Weather{
+				Temp:        result.Temperature,
+				Description: result.Description,
+			}, false
 		}
 		new = false
 	}
@@ -85,14 +62,27 @@ func fetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 
 	if err != nil {
 		// handle error
-		log.WithError(err).Warn("Failed to query openweather API")
-		return
+		logger.WithError(err).Warn("Failed to query openweather API")
+		if new {
+			return nil, false
+		}
+		return &Weather{
+			Temp:        result.Temperature,
+			Description: result.Description,
+		}, false
 	}
 
 	if resp.StatusCode != 200 {
 		// handle non 200 status code
-		log.Warn("Got non-200 back from openweather API")
-		return
+		logger.Warn("Got non-200 back from openweather API")
+		if new {
+			return nil, false
+		}
+
+		return &Weather{
+			Temp:        result.Temperature,
+			Description: result.Description,
+		}, false
 	}
 
 	defer resp.Body.Close()
@@ -103,9 +93,29 @@ func fetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 
 	// Create (or update) an entry in the database for the weather
 
+	var newResult *ent.Weather
+
 	if new {
-		db.Weather.Create().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).SetStadiumID(stadiumId).Save(ctx)
+		newResult, err = db.Weather.Create().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).SetStadiumID(stadiumId).Save(ctx)
 	} else {
-		result.Update().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).Save(ctx)
+		newResult, err = result.Update().SetDescription(owr.Weather[0].Description).SetTemperature(owr.Main.Temp).Save(ctx)
 	}
+
+	if err != nil {
+		logger.WithError(err).Warn("Failed to upsert weather data")
+		if new {
+			return nil, true
+		}
+
+		return &Weather{
+			Temp:        result.Temperature,
+			Description: result.Description,
+		}, true
+	}
+
+	return &Weather{
+		Temp:        newResult.Temperature,
+		Description: newResult.Description,
+	}, true
+
 }
