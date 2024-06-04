@@ -46,6 +46,11 @@ Normally my folder structure for APIs in Golang would group by purpose, models w
 
 The exception being the CLI flags model, and the database schema and ent generated helper functions.
 
+#### Tests
+
+Due to time constraints, tests were not able to be written in time for submission, but the application has been thoroughly tested manually through means of using tools such as Postman and using the flutter front end for integration testing
+
+
 ### Team Work
 
 This was developed in parallel with Katherine and Scott working on their aspects of the overall project, Scott worked on a front end application that could demonstrate real world usage of the API and Katherine developed the main approach in PHP/Laravel, this code base was developed to show that other languages can be utilized by our team.
