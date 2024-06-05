@@ -16,6 +16,11 @@ import (
 	"github.com/google/uuid"
 )
 
+var fallbackWeather = &Weather{
+	Description: "unavailable",
+	Icon:        "01d",
+}
+
 func (c *Controller) getWeatherByStadium(stadiumID string, includeID bool, ctx context.Context) (*Weather, error) {
 	id, _ := uuid.Parse(stadiumID)
 	stadium, err := c.db.Stadium.Query().Where(stadium.ID(id)).First(ctx)
@@ -42,7 +47,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		if !ent.IsNotFound(err) {
 			// log an error
 			logger.WithError(err).Warn("failed to query db")
-			return nil, false
+			return fallbackWeather, false
 		}
 		new = true
 	} else {
@@ -63,7 +68,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		// handle error
 		logger.WithError(err).Warn("Failed to query openweather API")
 		if new {
-			return nil, false
+			return fallbackWeather, false
 		}
 		return &Weather{
 			Temp:        result.Temperature,
@@ -76,7 +81,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		// handle non 200 status code
 		logger.Warn("Got non-200 back from openweather API")
 		if new {
-			return nil, false
+			return fallbackWeather, false
 		}
 
 		return &Weather{
@@ -90,7 +95,18 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 
 	var owr OpenWeatherResponse // Value is not set yet so it doesn't violate functional programming
 
-	json.NewDecoder(resp.Body).Decode(&owr)
+	err = json.NewDecoder(resp.Body).Decode(&owr)
+
+	if err != nil {
+		if new {
+			return fallbackWeather, false
+		}
+		return &Weather{
+			Temp:        result.Temperature,
+			Description: result.Description,
+			Icon:        result.Icon,
+		}, false
+	}
 
 	// Create (or update) an entry in the database for the weather
 
@@ -105,7 +121,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 	if err != nil {
 		logger.WithError(err).Warn("Failed to upsert weather data")
 		if new {
-			return nil, true
+			return fallbackWeather, true
 		}
 
 		return &Weather{

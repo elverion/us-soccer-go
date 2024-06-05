@@ -38,7 +38,7 @@ func (c *Controller) validateCSV(index int, records [][]string) (int, bool) {
 		return err == nil
 	}
 
-	if !isFloat(line[latIndex]) || !isFloat(line[longIndex]) {
+	if !isFloat(line[LatIndex]) || !isFloat(line[LongIndex]) {
 		return -1, false
 	}
 
@@ -49,7 +49,7 @@ func (c *Controller) validateCSV(index int, records [][]string) (int, bool) {
 	}
 
 	// The rest of the columns must not be empty
-	if isEmpty(line[teamIndex]) || isEmpty(line[fdcoukIndex]) || isEmpty(line[cityIndex]) || isEmpty(line[stadiumIndex]) || isEmpty(line[capacityIndex]) || isEmpty(line[countryIndex]) {
+	if isEmpty(line[TeamIndex]) || isEmpty(line[FDCOUKIndex]) || isEmpty(line[CityIndex]) || isEmpty(line[StadiumIndex]) || isEmpty(line[CapacityIndex]) || isEmpty(line[CountryIndex]) {
 		return -1, false
 	}
 
@@ -64,22 +64,22 @@ func (c *Controller) insertRecord(index int, records [][]string, ctx context.Con
 
 	line := records[index]
 
-	capacity, err := strconv.Atoi(line[capacityIndex])
-	lat, long := c.getLatLongFloats(line[latIndex], line[longIndex])
+	capacity, err := strconv.Atoi(line[CapacityIndex])
+	lat, long := c.getLatLongFloats(line[LatIndex], line[LongIndex])
 
 	if err != nil {
 		return -1, false
 	}
 
 	_, err = c.db.Stadium.Create().
-		SetTeam(strings.TrimSpace(line[teamIndex])).
-		SetFdcouk(strings.TrimSpace(line[fdcoukIndex])).
-		SetStadium(strings.TrimSpace(line[stadiumIndex])).
+		SetTeam(strings.TrimSpace(line[TeamIndex])).
+		SetFdcouk(strings.TrimSpace(line[FDCOUKIndex])).
+		SetStadium(strings.TrimSpace(line[StadiumIndex])).
 		SetCapacity(capacity).
-		SetCity(strings.TrimSpace(line[cityIndex])).
+		SetCity(strings.TrimSpace(line[CityIndex])).
 		SetLatitude(lat).
 		SetLongitude(long).
-		SetCountry(strings.TrimSpace(line[countryIndex])).Save(ctx)
+		SetCountry(strings.TrimSpace(line[CountryIndex])).Save(ctx)
 
 	if err != nil {
 		if ent.IsConstraintError(err) {
@@ -138,11 +138,13 @@ func (c *Controller) getStadiumsFunc(index int, records []*ent.Stadium, data []S
 		if record.Edges.Weather == nil {
 			w = &weather.Weather{
 				Description: "unavailable",
+				Icon:        "01d",
 			}
 		} else {
 			w = &weather.Weather{
 				Temp:        record.Edges.Weather.Temperature,
 				Description: record.Edges.Weather.Description,
+				Icon:        record.Edges.Weather.Icon,
 			}
 		}
 	}
@@ -179,5 +181,5 @@ func (c *Controller) getStadiums(ctx context.Context, withWeather bool) ([]Stadi
 		return nil, err
 	}
 
-	return c.getStadiumsFunc(1, records, []Stadium{}, withWeather), nil
+	return c.getStadiumsFunc(0, records, []Stadium{}, withWeather), nil
 }

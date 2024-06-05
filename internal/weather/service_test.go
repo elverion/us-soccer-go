@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 	"us-soccer-go-test/internal/ent"
 	"us-soccer-go-test/internal/ent/enttest"
 	"us-soccer-go-test/internal/weather"
@@ -95,7 +96,7 @@ func TestFetchWeatherCache(t *testing.T) {
 	ts.Close()
 }
 
-func TestFetchWeatherAPIFail(t *testing.T) {
+func TestFetchWeatherAPIFailReturnsFallbackIfNoCache(t *testing.T) {
 	// Set up a mock DB client for testing
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&_fk=1")
 	defer client.Close()
@@ -109,7 +110,41 @@ func TestFetchWeatherAPIFail(t *testing.T) {
 
 	result, _ := weather.FetchWeather("1", "2", client, testStadium.ID, context.Background(), log.Log)
 
-	if result != nil {
+	expected := weather.Weather{
+		Description: "unavailable",
+		Icon:        "01d",
+	}
+
+	if *result != expected {
+		t.FailNow()
+	}
+
+	ts.Close()
+}
+
+func TestFetchWeatherAPIFailReturnsExistingIfCache(t *testing.T) {
+	// Set up a mock DB client for testing
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&_fk=1")
+	defer client.Close()
+
+	// Set up a mock HTTP server
+	ts := mockHttpServer(`{"cod":429, "message":"Too many requests"}`, 429)
+
+	testStadium := createTestStadium(client)
+
+	client.Weather.Create().SetIcon("13n").SetDescription("big snow storm").SetStadiumID(client.Stadium.Query().FirstIDX(context.Background())).SetUpdateTime(time.Now().Add(time.Minute * -12)).SetTemperature(-23).SaveX(context.Background())
+
+	os.Setenv("OPENWEATHER_URL", fmt.Sprintf("%s/%s", ts.URL, "?lat=%s&lon=%s&appid=%s&units=metric"))
+
+	result, _ := weather.FetchWeather("1", "2", client, testStadium.ID, context.Background(), log.Log)
+
+	expected := weather.Weather{
+		Description: "big snow storm",
+		Icon:        "13n",
+		Temp:        -23,
+	}
+
+	if *result != expected {
 		t.FailNow()
 	}
 

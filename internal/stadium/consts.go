@@ -1,10 +1,10 @@
 package stadium
 
-const teamIndex = 0
-const fdcoukIndex = 1
-const cityIndex = 2
-const stadiumIndex = 3
-const capacityIndex = 4
-const latIndex = 5
-const longIndex = 6
-const countryIndex = 7
+const TeamIndex = 0
+const FDCOUKIndex = 1
+const CityIndex = 2
+const StadiumIndex = 3
+const CapacityIndex = 4
+const LatIndex = 5
+const LongIndex = 6
+const CountryIndex = 7

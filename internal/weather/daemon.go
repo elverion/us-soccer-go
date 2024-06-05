@@ -32,10 +32,12 @@ func StartWeatherDaemon(db *ent.Client, logger log.Interface) func() {
 							continue
 						}
 
-						if count >= 59 {
+						if count == 59 {
 							// sleep for a minute to reset the API key count
 							time.Sleep(1 * time.Minute)
 							count = 0
+							updateCount++
+							continue
 						}
 						count++
 						updateCount++
