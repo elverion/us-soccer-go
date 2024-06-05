@@ -1,4 +1,8 @@
 
+## US Soccer Test
+
+Please read SETUP.md for setup information + how to run tests
+
 ### Design Choices
 
 #### Database & Data Ingestion
@@ -49,6 +53,8 @@ The exception being the CLI flags model, and the database schema and ent generat
 #### Tests
 
 ~~Due to time constraints, tests were not able to be written in time for submission, but the application has been thoroughly tested manually through means of using tools such as Postman and using the flutter front end for integration testing~~ Tests have been added (under a separate branch as to not tamper with a potential code sample that has already been viewed)
+
+Not all things can be tested directly, for instance any unexported functions tied to structures are not exposed (like weather's service.go's getWeatherByStadium function) and thus can only be called internally. Meaning to test those functions, the function that ends up calling those functions must be tested (e.g calling the route that calls the controller function that calls that function).
 
 
 ### Team Work

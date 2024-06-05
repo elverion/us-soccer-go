@@ -78,3 +78,12 @@ go-build: go-prepare go-fetch
 		-trimpath \
 		-o ${PROJECT} \
 		${PACKAGE}
+
+go-test: go-prepare go-fetch
+	go test ./... -coverpkg us-soccer-go-test/internal/weather,us-soccer-go-test/internal/stadium
+
+# requires https://github.com/jandelgado/gcov2lcov
+go-test-coverage: go-prepare go-fetch
+	go test ./... -coverprofile=coverage.out -coverpkg us-soccer-go-test/internal/weather,us-soccer-go-test/internal/stadium \
+	&& gcov2lcov -infile=coverage.out -outfile=lcov.info \
+	&& rm coverage.out

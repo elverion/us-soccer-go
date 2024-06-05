@@ -2,3 +2,4 @@
 .env
 *.db
 lcov.info
+coverage.out

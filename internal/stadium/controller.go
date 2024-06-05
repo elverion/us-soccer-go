@@ -18,7 +18,7 @@ func NewController(lg log.Interface, db *ent.Client) *Controller {
 }
 
 func (c *Controller) upload(w http.ResponseWriter, r *http.Request) {
-	// Limits to 1 MB
+	// Limits to 1 MB (in the real world this would be dynamically defined, but for testing purposes, it is limited to 1MB)
 	if chix.Error(w, r, r.ParseMultipartForm(1<<20)) {
 		return
 	}
