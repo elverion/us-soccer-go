@@ -23,6 +23,7 @@ func (c *Controller) getWeatherForStadium(w http.ResponseWriter, r *http.Request
 	stadiumID := chi.URLParam(r, "stadium")
 
 	if stadiumID == "" {
+		// This block should never execute but it is there as a precaution
 		chix.JSON(w, r, 422, chix.M{"error": "missing stadium ID"})
 		return
 	}

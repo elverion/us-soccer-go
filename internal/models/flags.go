@@ -1,11 +1,12 @@
 package models
 
 type Flags struct {
-	Env       string     `short:"e" long:"env" env:"ENV" required:"true" description:"The environment the program is running in: production/development"`
-	HTTP      ConfigHTTP `group:"HTTP Server Options" namespace:"http" env-namespace:"HTTP"`
-	APIKeys   APIKeys    `group:"API keys" namespace:"api-keys" env-namespace:"API_KEYS"`
-	DB        ConfigDB   `group:"Database Options" namespace:"db" env-namespace:"DB"`
-	RunDaemon bool       `short:"d" long:"daemon" env:"RUN_DAEMON" description:"Determines if the weather daemon should be run"`
+	Env            string     `short:"e" long:"env" env:"ENV" required:"true" description:"The environment the program is running in: production/development"`
+	HTTP           ConfigHTTP `group:"HTTP Server Options" namespace:"http" env-namespace:"HTTP"`
+	APIKeys        APIKeys    `group:"API keys" namespace:"api-keys" env-namespace:"API_KEYS"`
+	DB             ConfigDB   `group:"Database Options" namespace:"db" env-namespace:"DB"`
+	RunDaemon      bool       `short:"d" long:"daemon" env:"RUN_DAEMON" description:"Determines if the weather daemon should be run"`
+	OpenWeatherURL string     `short:"o" long:"open-weather-url" env:"OPENWEATHER_URL" required:"true" description:"The URL for the openweather url"`
 }
 
 type ConfigHTTP struct {

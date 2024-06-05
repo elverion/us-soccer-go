@@ -48,7 +48,7 @@ The exception being the CLI flags model, and the database schema and ent generat
 
 #### Tests
 
-Due to time constraints, tests were not able to be written in time for submission, but the application has been thoroughly tested manually through means of using tools such as Postman and using the flutter front end for integration testing
+~~Due to time constraints, tests were not able to be written in time for submission, but the application has been thoroughly tested manually through means of using tools such as Postman and using the flutter front end for integration testing~~ Tests have been added (under a separate branch as to not tamper with a potential code sample that has already been viewed)
 
 
 ### Team Work

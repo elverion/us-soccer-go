@@ -15,3 +15,4 @@ services:
       DB_URL: ${DB_URL:-file:/app/database.db?mode=rwc&cache=shared&_fk=1}
       HTTP_ADDR: ${HTTP_ADDR:-:}${PORT:-8080}
       RUN_DAEMON: ${RUN_DAEMON:-false}
+      OPENWEATHER_URL: ${OPENWEATHER_URL:-https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric}

@@ -16,8 +16,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const baseURL = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric"
-
 func (c *Controller) getWeatherByStadium(stadiumID string, includeID bool, ctx context.Context) (*Weather, error) {
 	id, _ := uuid.Parse(stadiumID)
 	stadium, err := c.db.Stadium.Query().Where(stadium.ID(id)).First(ctx)
@@ -59,7 +57,7 @@ func FetchWeather(lat, long string, db *ent.Client, stadiumId uuid.UUID, ctx con
 		new = false
 	}
 
-	resp, err := http.Get(fmt.Sprintf(baseURL, lat, long, os.Getenv("API_KEYS_OPENWEATHER")))
+	resp, err := http.Get(fmt.Sprintf(os.Getenv("OPENWEATHER_URL"), lat, long, os.Getenv("API_KEYS_OPENWEATHER")))
 
 	if err != nil {
 		// handle error
