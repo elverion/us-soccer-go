@@ -10,6 +10,8 @@ You can build the application one of two ways
 - makefile: run `make` and it will default to building the application
 - docker: run `docker composer up` to build and run the application.
 
+Before running `docker compose up` please create a local file called `database.db` so that it can be properly volume mounted.
+
 For debugging locally, you can use the following command: `make go-debug`
 
 For testing, you can run `go test ./...` from the command line or if you have dev tools installed, you can run `make go-test` 

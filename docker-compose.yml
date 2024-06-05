@@ -8,6 +8,9 @@ services:
     working_dir: /app
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
+    volumes:
+    - ./database.db:/app/database.db
+
     environment:
       DB_CONNECTION: ${DB_CONNECTION:-sqlite}
       ENV: ${ENV:-production}
